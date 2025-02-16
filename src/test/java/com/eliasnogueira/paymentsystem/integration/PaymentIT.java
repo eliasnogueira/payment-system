@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PaymentIntegrationTest {
+public class PaymentIT {
 
     @Autowired
     private MockMvc mockMvc;
