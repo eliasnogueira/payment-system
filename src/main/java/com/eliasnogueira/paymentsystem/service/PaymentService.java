@@ -31,22 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class PaymentService {
 
     @Autowired
     private PaymentRepository paymentRepository;
-
-    private final Map<String, Double> exchangeRates = new HashMap<>();
-
-    public PaymentService() {
-        exchangeRates.put("USD", 1.0307);
-        exchangeRates.put("EUR", 1.0);
-        exchangeRates.put("GBP", 0.8325);
-    }
 
     public Payment createPaymentRequest(PaymentRequest paymentRequest) {
         Payment payment = new Payment();
@@ -70,18 +60,12 @@ public class PaymentService {
         if (!isValidCreditCard(creditCardNumber)) {
             return new PaymentResponse("FAILED", "Invalid credit card number", payment.getAmount(), uniqueId);
         }
-
-        double tax = amount.multiply(new BigDecimal("0.1")).doubleValue();
-
+        
         payment.setPaid(true);
         payment.setCreditCardNumber(creditCardNumber); // Store credit card number
         paymentRepository.save(payment);
 
         return new PaymentResponse("SUCCESS", "Payment processed successfully", payment.getAmount(), uniqueId, true, creditCardNumber);
-    }
-
-    public Map<String, Double> getExchangeRates() {
-        return exchangeRates;
     }
 
     private boolean isValidCreditCard(String creditCardNumber) {

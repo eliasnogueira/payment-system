@@ -55,8 +55,6 @@ public class Payment {
 
     private LocalDateTime timestamp;
 
-    private String secureId;
-
     public Payment() {
     }
 
