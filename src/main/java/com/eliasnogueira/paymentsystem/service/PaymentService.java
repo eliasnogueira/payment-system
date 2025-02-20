@@ -63,7 +63,7 @@ public class PaymentService {
             return new PaymentResponse("FAILED", "Payment request not found", null, uniqueId);
         }
 
-        if (!payment.getAmount().equals(amount)) {
+        if (payment.getAmount().compareTo(amount) != 0) {
             return new PaymentResponse("FAILED", "Amount does not match the payment request", payment.getAmount(), uniqueId);
         }
 
