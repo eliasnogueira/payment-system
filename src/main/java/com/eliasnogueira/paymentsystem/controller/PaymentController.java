@@ -30,7 +30,14 @@ import com.eliasnogueira.paymentsystem.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/payments")
@@ -49,7 +56,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> processPayment(
             @PathVariable String uniqueId,
             @RequestParam String creditCardNumber,
-            @RequestParam Double amount) {
+            @RequestParam BigDecimal amount) {
         PaymentResponse response = paymentService.processPayment(uniqueId, creditCardNumber, amount);
         return ResponseEntity.ok(response);
     }
