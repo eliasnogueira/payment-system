@@ -59,7 +59,7 @@ public class PaymentIT {
     public void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
-        payment.setAmount(new BigDecimal(100.0));
+        payment.setAmount(new BigDecimal("100.0"));
         paymentRepository.save(payment);
 
         mockMvc.perform(post("/payments/process/12345")
