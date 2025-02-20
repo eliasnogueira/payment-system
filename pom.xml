@@ -23,7 +23,7 @@
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-surefire-junit5-tree-reporter.version>1.4.0</maven-surefire-junit5-tree-reporter.version>
 
-        <spotbugs.version>4.9.1.0</spotbugs.version>
+        <spotbugs-maven-plugin.version>4.9.1.0</spotbugs-maven-plugin.version>
         <archunit.version>1.4.0</archunit.version>
     </properties>
 
@@ -146,7 +146,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.version}</version>
+                <version>${spotbugs-maven-plugin.version}</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
@@ -160,7 +160,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.version}</version>
+                <version>${spotbugs-maven-plugin.version}</version>
             </plugin>
         </plugins>
     </reporting>
