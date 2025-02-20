@@ -28,10 +28,6 @@
         <pitest-maven.version>1.18.2</pitest-maven.version>
         <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
         <jacoco-maven-plugin>0.8.12</jacoco-maven-plugin>
-
-        <sonar.projectKey>eliasnogueira_payment-system</sonar.projectKey>
-        <sonar.organization>eliasnogueira</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
