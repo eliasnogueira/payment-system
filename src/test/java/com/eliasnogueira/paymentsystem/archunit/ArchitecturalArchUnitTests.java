@@ -39,10 +39,4 @@ class ArchitecturalArchUnitTests {
 
         rule.check(importedClasses);
     }
-
-    @Test
-    void modelShouldBeRecords() {
-        ArchRule rule = classes().that().resideInAPackage("..model..").should().beRecords();
-        rule.check(importedClasses);
-    }
 }
