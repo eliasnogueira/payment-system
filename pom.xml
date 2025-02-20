@@ -23,8 +23,10 @@
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-surefire-junit5-tree-reporter.version>1.4.0</maven-surefire-junit5-tree-reporter.version>
 
-        <spotbugs.version>4.9.1.0</spotbugs.version>
+        <spotbugs-maven-plugin.version>4.9.1.0</spotbugs-maven-plugin.version>
         <archunit.version>1.4.0</archunit.version>
+        <pitest-maven.version>1.18.2</pitest-maven.version>
+        <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
     </properties>
 
     <dependencies>
@@ -61,6 +63,13 @@
             <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>${pitest-junit5-plugin.version}</version>
+        </dependency>
+        
     </dependencies>
 
     <build>
@@ -146,10 +155,19 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.version}</version>
+                <version>${spotbugs-maven-plugin.version}</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.18.2</version>
+                <configuration>
+                    <excludedClasses>com.eliasnogueira.paymentsystem.model.*</excludedClasses>
                 </configuration>
             </plugin>
         </plugins>
@@ -160,7 +178,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.version}</version>
+                <version>${spotbugs-maven-plugin.version}</version>
             </plugin>
         </plugins>
     </reporting>
