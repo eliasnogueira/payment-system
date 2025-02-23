@@ -41,9 +41,6 @@ public class PaymentRequest {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public PaymentRequest() {
-    }
-
     public String getUniqueId() {
         return uniqueId;
     }
