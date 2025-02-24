@@ -36,13 +36,14 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentControllerTest {
+class PaymentControllerTest {
 
     @Mock
     private PaymentService paymentService;
@@ -51,30 +52,44 @@ public class PaymentControllerTest {
     private PaymentController paymentController;
 
     @Test
-    public void testCreatePaymentRequest() {
-        PaymentRequest request = new PaymentRequest();
-        request.setUniqueId("12345");
-        request.setAmount(new BigDecimal("100.0"));
+    void shouldSuccessfullyCreatePaymentRequest() {
+        var paymentRequest = new PaymentRequest();
+        paymentRequest.setUniqueId("12345");
+        paymentRequest.setAmount(new BigDecimal("100.0"));
 
-        Payment payment = new Payment();
+        var payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));
 
         when(paymentService.createPaymentRequest(any())).thenReturn(payment);
 
-        ResponseEntity<Payment> response = paymentController.createPaymentRequest(request);
+        ResponseEntity<Payment> response = paymentController.createPaymentRequest(paymentRequest);
+
+        assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
-        assertEquals(200, response.getStatusCodeValue());
+        assertAll(
+                () -> assertEquals("12345", response.getBody().getUniqueId()),
+                () -> assertEquals(new BigDecimal("100.0"), response.getBody().getAmount())
+        );
     }
 
     @Test
-    public void testProcessPayment() {
-        PaymentResponse response = new PaymentResponse("SUCCESS", "Payment processed successfully", new BigDecimal("100.0"), "12345");
+    void shouldSuccessfullyProcessPaymentRequest() {
+        var paymentResponse = new PaymentResponse("SUCCESS", "Payment processed successfully", new BigDecimal("100.0"), "12345");
 
-        when(paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"))).thenReturn(response);
+        when(paymentService.
+                processPayment("12345", "1234567890123456", new BigDecimal("100.0")))
+                .thenReturn(paymentResponse);
 
-        ResponseEntity<PaymentResponse> result = paymentController.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
-        assertNotNull(result.getBody());
-        assertEquals("SUCCESS", result.getBody().getStatus());
+        ResponseEntity<PaymentResponse> response = paymentController.
+                processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
+
+        assertNotNull(response.getBody());
+        assertAll(
+                () -> assertEquals("SUCCESS", response.getBody().getStatus()),
+                () -> assertEquals("Payment processed successfully", response.getBody().getMessage()),
+                () -> assertEquals("12345", response.getBody().getUniqueId()),
+                () -> assertEquals(new BigDecimal("100.0"), response.getBody().getAmount())
+        );
     }
 }
