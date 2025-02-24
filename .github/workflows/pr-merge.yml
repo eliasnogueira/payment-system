@@ -101,8 +101,8 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Run integration tests with ${{ matrix.profile }}
-        run: mvn verify -P${{ matrix.profile }} -DskipUnitTests
+      - name: Run integration tests
+        run: mvn verify -DskipUnitTests
 
   database-tests:
     runs-on: ubuntu-latest
