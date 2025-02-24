@@ -31,13 +31,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
       - name: Build
         run: mvn clean -q compile -DskipTests
 
@@ -64,12 +57,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+      - name: Run unit tests
+        run: mvn test
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -93,13 +82,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
 
       - name: Run integration tests
         run: mvn verify -DskipUnitTests
@@ -130,13 +112,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
 
       - name: Run database tests with ${{ matrix.profile }}
         run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
