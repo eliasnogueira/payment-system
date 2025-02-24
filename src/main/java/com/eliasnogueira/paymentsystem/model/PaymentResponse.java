@@ -23,17 +23,19 @@
  */
 package com.eliasnogueira.paymentsystem.model;
 
+import java.math.BigDecimal;
+
 public class PaymentResponse {
 
     private String status;
     private String message;
-    private Double amount;
+    private BigDecimal amount;
     private String uniqueId;
     private boolean paid;
     private String creditCardNumber;
 
 
-    public PaymentResponse(String status, String message, Double amount, String uniqueId, boolean paid, String creditCardNumber) {
+    public PaymentResponse(String status, String message, BigDecimal amount, String uniqueId, boolean paid, String creditCardNumber) {
         this.status = status;
         this.message = message;
         this.amount = amount;
@@ -42,7 +44,7 @@ public class PaymentResponse {
         this.creditCardNumber = creditCardNumber;
     }
 
-    public PaymentResponse(String status, String message, Double amount, String uniqueId) {
+    public PaymentResponse(String status, String message, BigDecimal amount, String uniqueId) {
         this.status = status;
         this.message = message;
         this.amount = amount;
@@ -65,11 +67,11 @@ public class PaymentResponse {
         this.message = message;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

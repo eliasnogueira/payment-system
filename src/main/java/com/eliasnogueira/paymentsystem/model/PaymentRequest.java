@@ -27,6 +27,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class PaymentRequest {
@@ -36,16 +37,11 @@ public class PaymentRequest {
 
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be positive")
-    private Double amount;
+    private BigDecimal amount;
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public PaymentRequest() {}
-
-    public PaymentRequest(String uniqueId, Double amount, LocalDateTime timestamp) {
-        this.uniqueId = uniqueId;
-        this.amount = amount;
-        this.timestamp = timestamp;
+    public PaymentRequest() {
     }
 
     public String getUniqueId() {
@@ -56,11 +52,11 @@ public class PaymentRequest {
         this.uniqueId = uniqueId;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
