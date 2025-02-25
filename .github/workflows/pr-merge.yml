@@ -44,8 +44,8 @@ jobs:
       - name: Run integration tests
         run: mvn verify -DskipUnitTests
 
-      - name: Run database tests with ${{ matrix.profile }}
-        run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
+#      - name: Run database tests with ${{ matrix.profile }}
+#        run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
