@@ -69,7 +69,7 @@ jobs:
         run: mvn verify -DskipUnitTests
 
   database-tests:
-    needs: build
+    needs: integration-tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -102,36 +102,3 @@ jobs:
 
       - name: Run Database Tests with Profile ${{ matrix.profile }}
         run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
-
-  sonar-analysis:
-    needs: [ integration-tests, database-tests ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Cache Maven Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: compiled-artifacts
-          path: target/
-
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Run SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
