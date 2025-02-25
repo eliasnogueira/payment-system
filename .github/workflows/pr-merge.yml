@@ -5,47 +5,90 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-#    strategy:
-#      matrix:
-#        profile: [ mysql, mssql ]
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Set up JDK 23
         uses: actions/setup-java@v4
         with:
           java-version: '23'
           distribution: 'oracle'
           cache: maven
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build
+      - name: Build Project (without tests)
         run: mvn clean -q compile -DskipTests
 
-      - name: Run unit tests
-        run: mvn test
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
 
-      - name: Run integration tests
+      - name: Store Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-artifacts
+          path: target/
+
+  integration-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: compiled-artifacts
+          path: target/
+
+      - name: Run Integration Tests
         run: mvn verify -DskipUnitTests
 
-#      - name: Run database tests with ${{ matrix.profile }}
-#        run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
+  database-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile: [ mysql, mssql ]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: compiled-artifacts
+          path: target/
+
+      - name: Run Database Tests with Profile ${{ matrix.profile }}
+        run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
+
+  sonar-analysis:
+    needs: [ integration-tests, database-tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: compiled-artifacts
+          path: target/
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
