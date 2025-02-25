@@ -54,12 +54,6 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: target/
-
       - name: Run SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
         env:
