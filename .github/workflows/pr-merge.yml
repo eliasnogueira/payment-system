@@ -21,14 +21,15 @@ jobs:
           java-version: '23'
           distribution: 'oracle'
           cache: maven
-      - name: Build Project (without tests)
-        run: mvn clean -q compile -DskipTests
 
       - name: Cache Maven Dependencies
         uses: actions/cache@v3
         with:
           path: ~/.m2
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+
+      - name: Build Project (without tests)
+        run: mvn clean -q compile -DskipTests
 
       - name: Store Build Artifacts
         uses: actions/upload-artifact@v4
@@ -45,6 +46,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -60,11 +67,18 @@ jobs:
     strategy:
       matrix:
         profile: [ mysql, mssql ]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
@@ -83,6 +97,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
