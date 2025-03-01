@@ -30,40 +30,27 @@ import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class PaymentService {
 
     @Autowired
     private PaymentRepository paymentRepository;
 
-    private final Map<String, Double> exchangeRates = new HashMap<>();
-
-    public PaymentService() {
-        exchangeRates.put("USD", 1.0307);
-        exchangeRates.put("EUR", 1.0);
-        exchangeRates.put("GBP", 0.8325);
-    }
-
     public Payment createPaymentRequest(PaymentRequest paymentRequest) {
         Payment payment = new Payment();
         payment.setUniqueId(paymentRequest.getUniqueId());
         payment.setAmount(paymentRequest.getAmount());
         payment.setTimestamp(paymentRequest.getTimestamp());
-
         return paymentRepository.save(payment);
     }
 
-    public PaymentResponse processPayment(String uniqueId, String creditCardNumber, BigDecimal amount) {
+    public PaymentResponse processPayment(String uniqueId, String creditCardNumber, Double amount) {
         Payment payment = paymentRepository.findByUniqueId(uniqueId);
         if (payment == null) {
             return new PaymentResponse("FAILED", "Payment request not found", null, uniqueId);
         }
 
-        if (payment.getAmount().compareTo(amount) != 0) {
+        if (!payment.getAmount().equals(amount)) {
             return new PaymentResponse("FAILED", "Amount does not match the payment request", payment.getAmount(), uniqueId);
         }
 
@@ -71,8 +58,7 @@ public class PaymentService {
             return new PaymentResponse("FAILED", "Invalid credit card number", payment.getAmount(), uniqueId);
         }
 
-        double tax = amount.multiply(new BigDecimal("0.1")).doubleValue();
-
+        // Mark payment as paid and store credit card information
         payment.setPaid(true);
         payment.setCreditCardNumber(creditCardNumber); // Store credit card number
         paymentRepository.save(payment);
@@ -80,11 +66,8 @@ public class PaymentService {
         return new PaymentResponse("SUCCESS", "Payment processed successfully", payment.getAmount(), uniqueId, true, creditCardNumber);
     }
 
-    public Map<String, Double> getExchangeRates() {
-        return exchangeRates;
-    }
-
     private boolean isValidCreditCard(String creditCardNumber) {
+        // Basic credit card validation (16 digits)
         return creditCardNumber != null && creditCardNumber.matches("\\d{16}");
     }
 }
