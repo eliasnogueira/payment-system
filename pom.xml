@@ -150,10 +150,12 @@
                         <configuration>
                             <includes>
                                 <include>**/*Test.java</include>
+                                <include>%regex[.*(ArchUnit)*.*Tests.*]</include>
                             </includes>
                             <excludes>
                                 <exclude>**/*IT.java</exclude>
                             </excludes>
+                            <runOrder>alphabetical</runOrder>
                         </configuration>
                     </execution>
                 </executions>
@@ -286,30 +288,6 @@
                 <spring.profile>mssql</spring.profile>
             </properties>
         </profile>
-        <!--        <profile>-->
-        <!--            <id>mysql</id>-->
-        <!--            <properties>-->
-        <!--                <spring.datasource.url>jdbc:tc:mysql:9.2.0:///payments</spring.datasource.url>-->
-        <!--                <spring.datasource.driver-class-name>org.testcontainers.jdbc.ContainerDatabaseDriver-->
-        <!--                </spring.datasource.driver-class-name>-->
-        <!--                <spring.datasource.username>root</spring.datasource.username>-->
-        <!--                <spring.datasource.password>password</spring.datasource.password>-->
-        <!--                <spring.jpa.database-platform>org.hibernate.dialect.MySQLDialect</spring.jpa.database-platform>-->
-        <!--            </properties>-->
-        <!--        </profile>-->
-
-        <!--        <profile>-->
-        <!--            <id>mssql</id>-->
-        <!--            <properties>-->
-        <!--                <spring.datasource.url>jdbc:tc:sqlserver:mcr.microsoft.com/mssql/server:2022-latest:///[payments]-->
-        <!--                </spring.datasource.url>-->
-        <!--                <spring.datasource.driver-class-name>org.testcontainers.jdbc.ContainerDatabaseDriver-->
-        <!--                </spring.datasource.driver-class-name>-->
-        <!--                <spring.datasource.username>sa</spring.datasource.username>-->
-        <!--                <spring.datasource.password>yourStrong(!)Password</spring.datasource.password>-->
-        <!--                <spring.jpa.database-platform>org.hibernate.dialect.SQLServerDialect</spring.jpa.database-platform>-->
-        <!--            </properties>-->
-        <!--        </profile>-->
     </profiles>
 
     <reporting>
