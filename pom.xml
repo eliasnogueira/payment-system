@@ -98,6 +98,7 @@
                         <configuration>
                             <includes>
                                 <include>**/*Test.java</include>
+                                <include>%regex[.*(ArchUnit)*.*Tests.*]</include>
                             </includes>
                             <excludes>
                                 <exclude>**/*IT.java</exclude>
@@ -113,6 +114,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
+                    <runOrder>alphabetical</runOrder>
                     <reportFormat>plain</reportFormat>
                     <consoleOutputReporter>
                         <disable>true</disable>
