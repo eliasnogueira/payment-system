@@ -103,6 +103,7 @@
                             <excludes>
                                 <exclude>**/*IT.java</exclude>
                             </excludes>
+                            <runOrder>alphabetical</runOrder>
                         </configuration>
                     </execution>
                 </executions>
@@ -114,7 +115,6 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <runOrder>alphabetical</runOrder>
                     <reportFormat>plain</reportFormat>
                     <consoleOutputReporter>
                         <disable>true</disable>
