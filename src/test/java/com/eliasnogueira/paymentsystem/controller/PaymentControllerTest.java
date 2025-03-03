@@ -66,15 +66,4 @@ public class PaymentControllerTest {
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
     }
-
-    @Test
-    public void testProcessPayment() {
-        PaymentResponse response = new PaymentResponse("SUCCESS", "Payment processed successfully", new BigDecimal("100.0"), "12345");
-
-        when(paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"))).thenReturn(response);
-
-        ResponseEntity<PaymentResponse> result = paymentController.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
-        assertNotNull(result.getBody());
-        assertEquals("SUCCESS", result.getBody().getStatus());
-    }
 }

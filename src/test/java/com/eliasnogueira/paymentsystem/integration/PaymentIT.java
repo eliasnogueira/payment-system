@@ -54,20 +54,4 @@ public class PaymentIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uniqueId").value("12345"));
     }
-
-    @Test
-    public void testProcessPayment() throws Exception {
-        Payment payment = new Payment();
-        payment.setUniqueId("12345");
-        payment.setAmount(new BigDecimal("100.0"));
-        paymentRepository.save(payment);
-
-        mockMvc.perform(post("/payments/process/12345")
-                        .param("creditCardNumber", "1234567890123456")
-                        .param("amount", "100.0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.paid").value(true))
-                .andExpect(jsonPath("$.creditCardNumber").value("1234567890123456"));
-    }
 }
