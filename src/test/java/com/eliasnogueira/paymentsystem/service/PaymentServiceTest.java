@@ -75,8 +75,8 @@ class PaymentServiceTest {
 
         PaymentResponse response = paymentService.processPayment("12345", "1234567890123456", 100.0);
         assertEquals("SUCCESS", response.getStatus());
-        assertTrue(response.isPaid()); // Verify payment is marked as paid
-        assertEquals("1234567890123456", response.getCreditCardNumber()); // Ver
+        assertTrue(response.isPaid());
+        assertEquals("1234567890123456", response.getCreditCardNumber());
     }
 
     @Test

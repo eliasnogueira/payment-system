@@ -58,16 +58,14 @@ public class PaymentService {
             return new PaymentResponse("FAILED", "Invalid credit card number", payment.getAmount(), uniqueId);
         }
 
-        // Mark payment as paid and store credit card information
         payment.setPaid(true);
-        payment.setCreditCardNumber(creditCardNumber); // Store credit card number
+        payment.setCreditCardNumber(creditCardNumber);
         paymentRepository.save(payment);
 
         return new PaymentResponse("SUCCESS", "Payment processed successfully", payment.getAmount(), uniqueId, true, creditCardNumber);
     }
 
     private boolean isValidCreditCard(String creditCardNumber) {
-        // Basic credit card validation (16 digits)
         return creditCardNumber != null && creditCardNumber.matches("\\d{16}");
     }
 }
