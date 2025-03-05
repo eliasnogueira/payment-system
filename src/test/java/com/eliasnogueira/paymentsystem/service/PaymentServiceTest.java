@@ -38,7 +38,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentServiceTest {
+class PaymentServiceTest {
 
     @Mock
     private PaymentRepository paymentRepository;
@@ -47,7 +47,7 @@ public class PaymentServiceTest {
     private PaymentService paymentService;
 
     @Test
-    public void testCreatePaymentRequest() {
+    void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
         request.setAmount(100.0);
@@ -66,7 +66,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void testProcessPayment_Success() {
+    void testProcessPayment_Success() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(100.0);
@@ -80,7 +80,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void testProcessPayment_InvalidCreditCard() {
+    void testProcessPayment_InvalidCreditCard() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(100.0);

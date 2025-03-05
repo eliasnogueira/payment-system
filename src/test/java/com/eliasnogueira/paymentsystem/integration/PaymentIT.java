@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PaymentIT {
+class PaymentIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,16 +44,21 @@ public class PaymentIT {
     private PaymentRepository paymentRepository;
 
     @Test
-    public void testCreatePaymentRequest() throws Exception {
+    void testCreatePaymentRequest() throws Exception {
+        String payload = """
+                {
+                  "uniqueId": "12345",
+                  "amount": "100.0"
+                }""";
         mockMvc.perform(post("/payments/request")
                         .contentType("application/json")
-                        .content("{\"uniqueId\": \"12345\", \"amount\": 100.0}"))
+                        .content(payload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uniqueId").value("12345"));
     }
 
     @Test
-    public void testProcessPayment() throws Exception {
+    void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(100.0);
