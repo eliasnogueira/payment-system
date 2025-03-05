@@ -30,6 +30,8 @@ import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class PaymentService {
 
@@ -44,7 +46,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public PaymentResponse processPayment(String uniqueId, String creditCardNumber, Double amount) {
+    public PaymentResponse processPayment(String uniqueId, String creditCardNumber, BigDecimal amount) {
         Payment payment = paymentRepository.findByUniqueId(uniqueId);
         if (payment == null) {
             return new PaymentResponse("FAILED", "Payment request not found", null, uniqueId);
@@ -58,16 +60,14 @@ public class PaymentService {
             return new PaymentResponse("FAILED", "Invalid credit card number", payment.getAmount(), uniqueId);
         }
 
-        // Mark payment as paid and store credit card information
         payment.setPaid(true);
-        payment.setCreditCardNumber(creditCardNumber); // Store credit card number
+        payment.setCreditCardNumber(creditCardNumber);
         paymentRepository.save(payment);
 
         return new PaymentResponse("SUCCESS", "Payment processed successfully", payment.getAmount(), uniqueId, true, creditCardNumber);
     }
 
     private boolean isValidCreditCard(String creditCardNumber) {
-        // Basic credit card validation (16 digits)
         return creditCardNumber != null && creditCardNumber.matches("\\d{16}");
     }
 }

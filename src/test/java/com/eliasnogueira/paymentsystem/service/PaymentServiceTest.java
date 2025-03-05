@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentServiceTest {
+class PaymentServiceTest {
 
     @Mock
     private PaymentRepository paymentRepository;
@@ -49,7 +49,7 @@ public class PaymentServiceTest {
     private PaymentService paymentService;
 
     @Test
-    public void testCreatePaymentRequest() {
+    void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
         request.setAmount(new BigDecimal("100.0"));
@@ -68,7 +68,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void testProcessPayment_Success() {
+    void testProcessPayment_Success() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));
@@ -77,12 +77,12 @@ public class PaymentServiceTest {
 
         PaymentResponse response = paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
         assertEquals("SUCCESS", response.getStatus());
-        assertTrue(response.isPaid()); // Verify payment is marked as paid
-        assertEquals("1234567890123456", response.getCreditCardNumber()); // Ver
+        assertTrue(response.isPaid());
+        assertEquals("1234567890123456", response.getCreditCardNumber());
     }
 
     @Test
-    public void testProcessPayment_InvalidCreditCard() {
+    void testProcessPayment_InvalidCreditCard() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));

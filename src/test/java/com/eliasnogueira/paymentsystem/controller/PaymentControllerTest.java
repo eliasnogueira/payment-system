@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentControllerTest {
+class PaymentControllerTest {
 
     @Mock
     private PaymentService paymentService;
@@ -49,7 +49,7 @@ public class PaymentControllerTest {
     private PaymentController paymentController;
 
     @Test
-    public void testCreatePaymentRequest() {
+    void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
         request.setAmount(new BigDecimal("100.0"));
@@ -66,7 +66,7 @@ public class PaymentControllerTest {
     }
 
     @Test
-    public void testProcessPayment() {
+    void testProcessPayment() {
         PaymentResponse response = new PaymentResponse("SUCCESS", "Payment processed successfully", new BigDecimal("100.0"), "12345");
 
         when(paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"))).thenReturn(response);
