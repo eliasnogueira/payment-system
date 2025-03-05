@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
@@ -49,7 +51,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> processPayment(
             @PathVariable String uniqueId,
             @RequestParam String creditCardNumber,
-            @RequestParam Double amount) {
+            @RequestParam BigDecimal amount) {
         PaymentResponse response = paymentService.processPayment(uniqueId, creditCardNumber, amount);
         return ResponseEntity.ok(response);
     }

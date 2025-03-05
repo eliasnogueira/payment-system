@@ -32,6 +32,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +52,7 @@ class PaymentServiceTest {
     void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
-        request.setAmount(100.0);
+        request.setAmount(new BigDecimal("100.0"));
         request.setTimestamp(LocalDateTime.now());
 
         Payment payment = new Payment();
@@ -69,11 +71,11 @@ class PaymentServiceTest {
     void testProcessPayment_Success() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
-        payment.setAmount(100.0);
+        payment.setAmount(new BigDecimal("100.0"));
 
         when(paymentRepository.findByUniqueId("12345")).thenReturn(payment);
 
-        PaymentResponse response = paymentService.processPayment("12345", "1234567890123456", 100.0);
+        PaymentResponse response = paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
         assertEquals("SUCCESS", response.getStatus());
         assertTrue(response.isPaid());
         assertEquals("1234567890123456", response.getCreditCardNumber());
@@ -83,11 +85,11 @@ class PaymentServiceTest {
     void testProcessPayment_InvalidCreditCard() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
-        payment.setAmount(100.0);
+        payment.setAmount(new BigDecimal("100.0"));
 
         when(paymentRepository.findByUniqueId("12345")).thenReturn(payment);
 
-        PaymentResponse response = paymentService.processPayment("12345", "invalid", 100.0);
+        PaymentResponse response = paymentService.processPayment("12345", "invalid", new BigDecimal("100.0"));
         assertEquals("FAILED", response.getStatus());
     }
 }

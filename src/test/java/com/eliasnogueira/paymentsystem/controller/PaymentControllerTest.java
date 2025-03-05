@@ -33,6 +33,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -49,11 +52,11 @@ class PaymentControllerTest {
     void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
-        request.setAmount(100.0);
+        request.setAmount(new BigDecimal("100.0"));
 
         Payment payment = new Payment();
         payment.setUniqueId("12345");
-        payment.setAmount(100.0);
+        payment.setAmount(new BigDecimal("100.0"));
 
         when(paymentService.createPaymentRequest(any())).thenReturn(payment);
 
@@ -64,11 +67,11 @@ class PaymentControllerTest {
 
     @Test
     void testProcessPayment() {
-        PaymentResponse response = new PaymentResponse("SUCCESS", "Payment processed successfully", 100.0, "12345");
+        PaymentResponse response = new PaymentResponse("SUCCESS", "Payment processed successfully", new BigDecimal("100.0"), "12345");
 
-        when(paymentService.processPayment("12345", "1234567890123456", 100.0)).thenReturn(response);
+        when(paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"))).thenReturn(response);
 
-        ResponseEntity<PaymentResponse> result = paymentController.processPayment("12345", "1234567890123456", 100.0);
+        ResponseEntity<PaymentResponse> result = paymentController.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
         assertNotNull(result.getBody());
         assertEquals("SUCCESS", result.getBody().getStatus());
     }

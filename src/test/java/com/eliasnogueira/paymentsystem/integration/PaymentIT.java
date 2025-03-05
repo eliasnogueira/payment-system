@@ -30,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.math.BigDecimal;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -61,7 +64,7 @@ class PaymentIT {
     void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
-        payment.setAmount(100.0);
+        payment.setAmount(new BigDecimal("100.0"));
         paymentRepository.save(payment);
 
         mockMvc.perform(post("/payments/process/12345")
