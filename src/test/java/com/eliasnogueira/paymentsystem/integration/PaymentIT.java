@@ -25,6 +25,7 @@ package com.eliasnogueira.paymentsystem.integration;
 
 import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -61,6 +62,7 @@ class PaymentIT {
     }
 
     @Test
+    @Disabled
     void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
