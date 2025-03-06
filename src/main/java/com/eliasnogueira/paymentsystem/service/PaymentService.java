@@ -65,7 +65,7 @@ public class PaymentService {
         }
 
         payment.setPaid(true);
-        payment.setCreditCardNumber(creditCardNumber); // Store credit card number
+        payment.setCreditCardNumber(creditCardNumber);
         paymentRepository.save(payment);
 
         return new PaymentResponse("SUCCESS", "Payment processed successfully", payment.getAmount(), uniqueId, true, creditCardNumber);
