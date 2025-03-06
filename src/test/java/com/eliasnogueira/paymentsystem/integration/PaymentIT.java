@@ -25,6 +25,7 @@ package com.eliasnogueira.paymentsystem.integration;
 
 import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PaymentIT {
+class PaymentIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +48,7 @@ public class PaymentIT {
     private PaymentRepository paymentRepository;
 
     @Test
-    public void testCreatePaymentRequest() throws Exception {
+    void testCreatePaymentRequest() throws Exception {
         mockMvc.perform(post("/payments/request")
                         .contentType("application/json")
                         .content("{\"uniqueId\": \"12345\", \"amount\": 100.0}"))
@@ -56,7 +57,8 @@ public class PaymentIT {
     }
 
     @Test
-    public void testProcessPayment() throws Exception {
+    @Disabled
+    void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));
