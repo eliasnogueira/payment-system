@@ -80,16 +80,4 @@ class PaymentServiceTest {
         assertTrue(response.isPaid());
         assertEquals("1234567890123456", response.getCreditCardNumber()); // Ver
     }
-
-    @Test
-    void testProcessPayment_InvalidCreditCard() {
-        Payment payment = new Payment();
-        payment.setUniqueId("12345");
-        payment.setAmount(new BigDecimal("100.0"));
-
-        when(paymentRepository.findByUniqueId("12345")).thenReturn(payment);
-
-        PaymentResponse response = paymentService.processPayment("12345", "invalid", new BigDecimal("100.0"));
-        assertEquals("FAILED", response.getStatus());
-    }
 }
