@@ -41,6 +41,8 @@ public class PaymentRequest {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
+    public PaymentRequest() {}
+
     public PaymentRequest(String uniqueId, BigDecimal amount, LocalDateTime timestamp) {
         this.uniqueId = uniqueId;
         this.amount = amount;
