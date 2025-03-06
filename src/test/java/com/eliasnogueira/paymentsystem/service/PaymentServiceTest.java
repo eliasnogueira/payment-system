@@ -131,6 +131,7 @@ class PaymentServiceTest {
             assertNull(response.getCreditCardNumber());
         });
     }
+
     @Test
     void shouldNotProcessPaymentWhenPaymentRequestNotFound() {
         String notFoundUniqueId = UUID.randomUUID().toString();

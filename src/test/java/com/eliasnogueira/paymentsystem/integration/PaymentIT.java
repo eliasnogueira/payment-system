@@ -33,12 +33,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PaymentIT {
+class PaymentIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +48,7 @@ public class PaymentIT {
     private PaymentRepository paymentRepository;
 
     @Test
-    public void testCreatePaymentRequest() throws Exception {
+    void testCreatePaymentRequest() throws Exception {
         mockMvc.perform(post("/payments/request")
                         .contentType("application/json")
                         .content("{\"uniqueId\": \"12345\", \"amount\": 100.0}"))
@@ -56,7 +57,7 @@ public class PaymentIT {
     }
 
     @Test
-    public void testProcessPayment() throws Exception {
+    void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));
