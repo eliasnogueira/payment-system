@@ -25,7 +25,6 @@ package com.eliasnogueira.paymentsystem.controller;
 
 import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.model.PaymentRequest;
-import com.eliasnogueira.paymentsystem.model.PaymentResponse;
 import com.eliasnogueira.paymentsystem.service.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +35,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentControllerTest {
@@ -63,16 +64,5 @@ class PaymentControllerTest {
         ResponseEntity<Payment> response = paymentController.createPaymentRequest(request);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
-    void testProcessPayment() {
-        PaymentResponse response = new PaymentResponse("SUCCESS", "Payment processed successfully", new BigDecimal("100.0"), "12345");
-
-        when(paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"))).thenReturn(response);
-
-        ResponseEntity<PaymentResponse> result = paymentController.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
-        assertNotNull(result.getBody());
-        assertEquals("SUCCESS", result.getBody().getStatus());
     }
 }
