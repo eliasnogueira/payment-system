@@ -32,7 +32,7 @@ jobs:
       run: mvn clean -q compile -DskipTests
 
     - name: Static analysis
-      run: mvn sportbugs:check
+      run: mvn spotbugs:check
 
     - name: Unit and Integration Tests
       run: mvn verify
