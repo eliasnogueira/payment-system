@@ -72,6 +72,7 @@ class PaymentServiceTest {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));
+        payment.setCurrency("USD");
 
         when(paymentRepository.findByUniqueId("12345")).thenReturn(payment);
 

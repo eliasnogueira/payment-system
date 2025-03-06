@@ -57,6 +57,16 @@ public class Payment {
 
     private String secureId;
 
+    private String currency;
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public Payment() {
     }
 
