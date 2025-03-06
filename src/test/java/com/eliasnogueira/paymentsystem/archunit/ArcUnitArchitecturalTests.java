@@ -2,18 +2,17 @@ package com.eliasnogueira.paymentsystem.archunit;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption.Predefined;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static com.tngtech.archunit.core.importer.ImportOption.Predefined.DO_NOT_INCLUDE_TESTS;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 class ArcUnitArchitecturalTests {
 
-    private final JavaClasses importedClasses = new ClassFileImporter().withImportOption(Predefined.DO_NOT_INCLUDE_TESTS)
+    private final JavaClasses importedClasses = new ClassFileImporter().withImportOption(DO_NOT_INCLUDE_TESTS)
             .importPackages("com.eliasnogueira.paymentsystem");
 
     @Test
@@ -53,12 +52,7 @@ class ArcUnitArchitecturalTests {
     }
 
     @Test
-    void noDisabledTests() {
-        noClasses().should().notBeAnnotatedWith(Disabled.class).check(importedClasses);
-    }
-
-    @Test
     void noAutowired() {
-        noClasses().should().notBeAnnotatedWith(Autowired.class).check(importedClasses);
+        noFields().should().beAnnotatedWith(Autowired.class).check(importedClasses);
     }
 }
