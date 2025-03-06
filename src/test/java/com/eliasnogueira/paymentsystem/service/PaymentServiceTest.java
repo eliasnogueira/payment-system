@@ -78,7 +78,7 @@ class PaymentServiceTest {
         PaymentResponse response = paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
         assertEquals("SUCCESS", response.getStatus());
         assertTrue(response.isPaid());
-        assertEquals("1234567890123456", response.getCreditCardNumber()); // Ver
+        assertEquals("1234567890123456", response.getCreditCardNumber());
     }
 
     @Test

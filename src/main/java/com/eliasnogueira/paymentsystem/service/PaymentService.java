@@ -60,9 +60,9 @@ public class PaymentService {
         if (!isValidCreditCard(creditCardNumber)) {
             return new PaymentResponse("FAILED", "Invalid credit card number", payment.getAmount(), uniqueId);
         }
-        
+
         payment.setPaid(true);
-        payment.setCreditCardNumber(creditCardNumber); // Store credit card number
+        payment.setCreditCardNumber(creditCardNumber);
         paymentRepository.save(payment);
 
         return new PaymentResponse("SUCCESS", "Payment processed successfully", payment.getAmount(), uniqueId, true, creditCardNumber);
