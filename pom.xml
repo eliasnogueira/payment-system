@@ -24,6 +24,13 @@
         <maven-surefire-junit5-tree-reporter.version>1.4.0</maven-surefire-junit5-tree-reporter.version>
 
         <spotbugs-maven-plugin.version>4.9.1.0</spotbugs-maven-plugin.version>
+        <archunit.version>1.4.0</archunit.version>
+        <pitest-maven.version>1.18.2</pitest-maven.version>
+        <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <testcontainers.verson>1.20.5</testcontainers.verson>
+        <mysql-connector-j.version>9.2.0</mysql-connector-j.version>
+        <mssql-jdbc.version>12.8.1.jre11</mssql-jdbc.version>
     </properties>
 
     <dependencies>
@@ -52,6 +59,59 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
+            <version>${archunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>${pitest-junit5-plugin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mysql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mssqlserver</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql-connector-j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql-jdbc.version}</version>
         </dependency>
     </dependencies>
 
@@ -90,13 +150,16 @@
                         <configuration>
                             <includes>
                                 <include>**/*Test.java</include>
+                                <include>%regex[.*(ArchUnit)*.*Tests.*]</include>
                             </includes>
                             <excludes>
                                 <exclude>**/*IT.java</exclude>
                             </excludes>
+                            <runOrder>alphabetical</runOrder>
                         </configuration>
                     </execution>
                 </executions>
+
                 <dependencies>
                     <dependency>
                         <groupId>me.fabriciorby</groupId>
@@ -104,15 +167,21 @@
                         <version>${maven-surefire-junit5-tree-reporter.version}</version>
                     </dependency>
                 </dependencies>
+
                 <configuration>
                     <reportFormat>plain</reportFormat>
                     <consoleOutputReporter>
                         <disable>true</disable>
                     </consoleOutputReporter>
+
                     <statelessTestsetInfoReporter
                             implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
                         <theme>UNICODE</theme>
                     </statelessTestsetInfoReporter>
+
+                    <systemPropertyVariables>
+                        <spring.profiles.active>${spring.profile}</spring.profiles.active>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
@@ -130,11 +199,104 @@
                             <includes>
                                 <include>**/*IT.java</include>
                             </includes>
+
+                            <systemPropertyVariables>
+                                <spring.profiles.active>${spring.profile}</spring.profiles.active>
+                            </systemPropertyVariables>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.18.2</version>
+                <configuration>
+                    <excludedClasses>com.eliasnogueira.paymentsystem.model.*</excludedClasses>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profile>h2</spring.profile>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mysql</id>
+            <properties>
+                <spring.profile>mysql</spring.profile>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mssql</id>
+            <properties>
+                <spring.profile>mssql</spring.profile>
+            </properties>
+        </profile>
+    </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

@@ -24,55 +24,89 @@
 package com.eliasnogueira.paymentsystem.integration;
 
 import com.eliasnogueira.paymentsystem.model.Payment;
+import com.eliasnogueira.paymentsystem.model.PaymentRequest;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
+import com.eliasnogueira.paymentsystem.service.PaymentService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("${spring.profiles.active}")
 class PaymentIT {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @Test
-    void testCreatePaymentRequest() throws Exception {
-        String payload = """
-                {
-                  "uniqueId": "12345",
-                  "amount": "100.0"
-                }""";
-        mockMvc.perform(post("/payments/request")
-                        .contentType("application/json")
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.uniqueId").value("12345"));
+    private Payment payment;
+
+    @BeforeEach
+    void setUp() {
+        payment = new Payment();
+        payment.setUniqueId(UUID.randomUUID().toString());
+        payment.setAmount(new BigDecimal("100.00"));
+        payment.setCreditCardNumber("1234567890123456");
     }
 
     @Test
-    void testProcessPayment() throws Exception {
-        Payment payment = new Payment();
-        payment.setUniqueId("12345");
-        payment.setAmount(new BigDecimal("100.0"));
-        paymentRepository.save(payment);
+    void shouldSuccessfullyCreatePayment() {
+        Payment savedPayment = paymentRepository.save(payment);
+        assertAll("Successfully created payment",
+                () -> assertEquals(payment.getUniqueId(), savedPayment.getUniqueId()),
+                () -> assertEquals(payment.getAmount(), savedPayment.getAmount()),
+                () -> assertFalse(savedPayment.isPaid()),
+                () -> assertEquals(payment.getCreditCardNumber(), savedPayment.getCreditCardNumber()),
+                () -> assertNull(savedPayment.getTimestamp()));
+    }
 
-        mockMvc.perform(post("/payments/process/12345")
-                        .param("creditCardNumber", "1234567890123456")
-                        .param("amount", "100.0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.paid").value(true))
-                .andExpect(jsonPath("$.creditCardNumber").value("1234567890123456"));
+    @Test
+    void shouldSuccessfullyFindPayment() {
+        Payment savedPayment = paymentRepository.save(payment);
+        Payment paymentFound = paymentRepository.findByUniqueId(savedPayment.getUniqueId());
+
+        assertAll("Successfully found payment",
+                () -> assertEquals(savedPayment.getUniqueId(), paymentFound.getUniqueId()),
+                () -> assertEquals(savedPayment.getAmount(), paymentFound.getAmount()),
+                () -> assertFalse(paymentFound.isPaid()),
+                () -> assertEquals(payment.getCreditCardNumber(), savedPayment.getCreditCardNumber()),
+                () -> assertNull(paymentFound.getTimestamp()));
+    }
+
+    @Test
+    void shouldSuccessfullyCreatePaymentRequest() {
+        var paymentService = new PaymentService(paymentRepository);
+
+        var paymentRequest = new PaymentRequest();
+        paymentRequest.setUniqueId(payment.getUniqueId());
+        paymentRequest.setAmount(payment.getAmount());
+        paymentRequest.setTimestamp(LocalDateTime.now());
+
+        var payment = paymentService.createPaymentRequest(paymentRequest);
+        payment.setCreditCardNumber("1234567891234567");
+
+        var paymentResponse = paymentService.
+                processPayment(paymentRequest.getUniqueId(), payment.getCreditCardNumber(), paymentRequest.getAmount());
+
+        assertAll("Full Payment Process",
+                () -> assertEquals("SUCCESS", paymentResponse.getStatus()),
+                () -> assertEquals(paymentResponse.getUniqueId(), paymentRequest.getUniqueId()),
+                () -> assertEquals(paymentResponse.getAmount(), paymentRequest.getAmount()),
+                () -> assertTrue(paymentResponse.isPaid()),
+                () -> assertEquals(paymentResponse.getCreditCardNumber(), payment.getCreditCardNumber()),
+                () -> assertEquals("Payment processed successfully", paymentResponse.getMessage()));
     }
 }
