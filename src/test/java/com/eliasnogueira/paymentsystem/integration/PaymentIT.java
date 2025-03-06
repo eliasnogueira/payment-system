@@ -26,28 +26,30 @@ package com.eliasnogueira.paymentsystem.integration;
 import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PaymentIT {
+class PaymentIT {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
+    private final PaymentRepository paymentRepository;
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    public PaymentIT(MockMvc mockMvc, PaymentRepository paymentRepository) {
+        this.mockMvc = mockMvc;
+        this.paymentRepository = paymentRepository;
+    }
 
     @Test
-    public void testCreatePaymentRequest() throws Exception {
+    void testCreatePaymentRequest() throws Exception {
         mockMvc.perform(post("/payments/request")
                         .contentType("application/json")
                         .content("{\"uniqueId\": \"12345\", \"amount\": 100.0}"))
@@ -56,7 +58,7 @@ public class PaymentIT {
     }
 
     @Test
-    public void testProcessPayment() throws Exception {
+    void testProcessPayment() throws Exception {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));
