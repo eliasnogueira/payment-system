@@ -48,9 +48,14 @@ class PaymentIT {
 
     @Test
     void testCreatePaymentRequest() throws Exception {
+        String payload = """
+                {
+                  "uniqueId": "12345",
+                  "amount": "100.0"
+                }""";
         mockMvc.perform(post("/payments/request")
                         .contentType("application/json")
-                        .content("{\"uniqueId\": \"12345\", \"amount\": 100.0}"))
+                        .content(payload))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.uniqueId").value("12345"));
     }
