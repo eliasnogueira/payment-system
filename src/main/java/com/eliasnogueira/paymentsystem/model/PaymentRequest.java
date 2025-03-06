@@ -41,9 +41,14 @@ public class PaymentRequest {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public PaymentRequest() {}
+    public PaymentRequest() {
+    }
 
     public PaymentRequest(String uniqueId, BigDecimal amount, LocalDateTime timestamp) {
+        if (uniqueId == null) {
+            throw new IllegalArgumentException("Unique ID is required");
+        }
+
         this.uniqueId = uniqueId;
         this.amount = amount;
         this.timestamp = timestamp;
