@@ -31,6 +31,9 @@ jobs:
     - name: Build
       run: mvn clean -q compile -DskipTests
 
+    - name: Static analysis
+      run: mvn spotbugs:check
+
     - name: Unit and Integration Tests
       run: mvn verify
   
