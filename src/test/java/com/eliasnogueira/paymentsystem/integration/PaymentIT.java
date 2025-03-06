@@ -23,7 +23,6 @@
  */
 package com.eliasnogueira.paymentsystem.integration;
 
-import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +30,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PaymentIT {
+class PaymentIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +45,7 @@ public class PaymentIT {
     private PaymentRepository paymentRepository;
 
     @Test
-    public void testCreatePaymentRequest() throws Exception {
+    void testCreatePaymentRequest() throws Exception {
         mockMvc.perform(post("/payments/request")
                         .contentType("application/json")
                         .content("{\"uniqueId\": \"12345\", \"amount\": 100.0}"))

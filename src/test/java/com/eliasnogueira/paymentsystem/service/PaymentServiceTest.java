@@ -35,12 +35,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentServiceTest {
+class PaymentServiceTest {
 
     @Mock
     private PaymentRepository paymentRepository;
@@ -49,7 +52,7 @@ public class PaymentServiceTest {
     private PaymentService paymentService;
 
     @Test
-    public void testCreatePaymentRequest() {
+    void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
         request.setAmount(new BigDecimal("100.0"));
@@ -68,7 +71,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void testProcessPayment_Success() {
+    void testProcessPayment_Success() {
         Payment payment = new Payment();
         payment.setUniqueId("12345");
         payment.setAmount(new BigDecimal("100.0"));

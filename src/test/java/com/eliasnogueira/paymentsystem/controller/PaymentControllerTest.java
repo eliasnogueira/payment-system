@@ -25,7 +25,6 @@ package com.eliasnogueira.paymentsystem.controller;
 
 import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.model.PaymentRequest;
-import com.eliasnogueira.paymentsystem.model.PaymentResponse;
 import com.eliasnogueira.paymentsystem.service.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentControllerTest {
+class PaymentControllerTest {
 
     @Mock
     private PaymentService paymentService;
@@ -51,7 +50,7 @@ public class PaymentControllerTest {
     private PaymentController paymentController;
 
     @Test
-    public void testCreatePaymentRequest() {
+    void testCreatePaymentRequest() {
         PaymentRequest request = new PaymentRequest();
         request.setUniqueId("12345");
         request.setAmount(new BigDecimal("100.0"));

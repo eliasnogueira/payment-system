@@ -43,8 +43,11 @@ import java.math.BigDecimal;
 @RequestMapping("/payments")
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
+
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
 
     @PostMapping("/request")
     public ResponseEntity<Payment> createPaymentRequest(@Valid @RequestBody PaymentRequest paymentRequest) {

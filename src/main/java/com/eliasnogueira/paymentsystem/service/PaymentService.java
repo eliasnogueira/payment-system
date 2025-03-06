@@ -27,7 +27,6 @@ import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.model.PaymentRequest;
 import com.eliasnogueira.paymentsystem.model.PaymentResponse;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,8 +34,11 @@ import java.math.BigDecimal;
 @Service
 public class PaymentService {
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
+
+    public PaymentService(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
 
     public Payment createPaymentRequest(PaymentRequest paymentRequest) {
         Payment payment = new Payment();
@@ -60,7 +62,7 @@ public class PaymentService {
         if (!isValidCreditCard(creditCardNumber)) {
             return new PaymentResponse("FAILED", "Invalid credit card number", payment.getAmount(), uniqueId);
         }
-        
+
         payment.setPaid(true);
         payment.setCreditCardNumber(creditCardNumber); // Store credit card number
         paymentRepository.save(payment);
