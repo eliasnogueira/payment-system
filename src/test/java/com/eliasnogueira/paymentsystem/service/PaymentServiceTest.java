@@ -25,8 +25,8 @@ package com.eliasnogueira.paymentsystem.service;
 
 import com.eliasnogueira.paymentsystem.model.Payment;
 import com.eliasnogueira.paymentsystem.model.PaymentRequest;
-import com.eliasnogueira.paymentsystem.model.PaymentResponse;
 import com.eliasnogueira.paymentsystem.repository.PaymentRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,9 +35,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
@@ -48,48 +55,120 @@ class PaymentServiceTest {
     @InjectMocks
     private PaymentService paymentService;
 
+    private String uniqueId;
+
+    @BeforeEach
+    void setUp() {
+        uniqueId = UUID.randomUUID().toString();
+    }
+
     @Test
-    void testCreatePaymentRequest() {
-        PaymentRequest request = new PaymentRequest();
-        request.setUniqueId("12345");
+    void successfullyCreatePayment() {
+        var request = new PaymentRequest();
+        request.setUniqueId(uniqueId);
         request.setAmount(new BigDecimal("100.0"));
         request.setTimestamp(LocalDateTime.now());
 
-        Payment payment = new Payment();
+        var payment = new Payment();
         payment.setUniqueId(request.getUniqueId());
         payment.setAmount(request.getAmount());
         payment.setTimestamp(request.getTimestamp());
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
-        Payment result = paymentService.createPaymentRequest(request);
+        var result = paymentService.createPaymentRequest(request);
         assertNotNull(result);
-        assertEquals("12345", result.getUniqueId());
+        assertAll("Successfully created payment", () -> {
+            assertNull(result.getId());
+            assertEquals(payment.getUniqueId(), result.getUniqueId());
+            assertEquals(payment.getAmount(), result.getAmount());
+            assertFalse(result.isPaid());
+            assertNull(result.getCreditCardNumber());
+            assertEquals(payment.getTimestamp(), result.getTimestamp());
+        });
     }
 
     @Test
-    void testProcessPayment_Success() {
-        Payment payment = new Payment();
-        payment.setUniqueId("12345");
+    void successfullyProcessPayment() {
+        var payment = new Payment();
+        payment.setUniqueId(uniqueId);
         payment.setAmount(new BigDecimal("100.0"));
 
-        when(paymentRepository.findByUniqueId("12345")).thenReturn(payment);
+        when(paymentRepository.findByUniqueId(uniqueId)).thenReturn(payment);
 
-        PaymentResponse response = paymentService.processPayment("12345", "1234567890123456", new BigDecimal("100.0"));
-        assertEquals("SUCCESS", response.getStatus());
-        assertTrue(response.isPaid());
-        assertEquals("1234567890123456", response.getCreditCardNumber());
+        String creditCardNumber = "1234567890123456";
+        var paymentResponse = paymentService.
+                processPayment(uniqueId, creditCardNumber, new BigDecimal("100.0"));
+
+        assertAll("Payment request processed successfully", () -> {
+            assertEquals("SUCCESS", paymentResponse.getStatus());
+            assertEquals("Payment processed successfully", paymentResponse.getMessage());
+            assertEquals(new BigDecimal("100.0"), paymentResponse.getAmount());
+            assertEquals(uniqueId, paymentResponse.getUniqueId());
+            assertEquals(creditCardNumber, paymentResponse.getCreditCardNumber());
+            assertTrue(paymentResponse.isPaid());
+        });
     }
 
     @Test
-    void testProcessPayment_InvalidCreditCard() {
-        Payment payment = new Payment();
-        payment.setUniqueId("12345");
+    void shouldNotProcessPaymentWhenCreditCardIsInvalid() {
+        var payment = new Payment();
+        payment.setUniqueId(uniqueId);
         payment.setAmount(new BigDecimal("100.0"));
 
-        when(paymentRepository.findByUniqueId("12345")).thenReturn(payment);
+        when(paymentRepository.findByUniqueId(uniqueId)).thenReturn(payment);
 
-        PaymentResponse response = paymentService.processPayment("12345", "invalid", new BigDecimal("100.0"));
-        assertEquals("FAILED", response.getStatus());
+        var paymentResponse = paymentService.
+                processPayment(uniqueId, "invalid", new BigDecimal("100.0"));
+
+        assertAll("Invalid credit card number", () -> {
+            assertEquals("FAILED", paymentResponse.getStatus());
+            assertEquals("Invalid credit card number", paymentResponse.getMessage());
+            assertEquals(new BigDecimal("100.0"), paymentResponse.getAmount());
+            assertEquals(uniqueId, paymentResponse.getUniqueId());
+            assertFalse(paymentResponse.isPaid());
+            assertNull(paymentResponse.getCreditCardNumber());
+        });
+    }
+
+    @Test
+    void shouldNotProcessPaymentWhenPaymentRequestNotFound() {
+        String notFoundUniqueId = UUID.randomUUID().toString();
+        when(paymentRepository.findByUniqueId(notFoundUniqueId)).thenReturn(null);
+
+        String creditCardNumber = "1234567890123456";
+        var paymentResponse = paymentService.
+                processPayment(notFoundUniqueId, creditCardNumber, new BigDecimal("100.0"));
+
+        assertAll("Payment request not found", () -> {
+            assertEquals("FAILED", paymentResponse.getStatus());
+            assertEquals("Payment request not found", paymentResponse.getMessage());
+            assertNull(paymentResponse.getAmount());
+            assertEquals(notFoundUniqueId, paymentResponse.getUniqueId());
+            assertFalse(paymentResponse.isPaid());
+            assertNull(paymentResponse.getCreditCardNumber());
+        });
+    }
+
+    @Test
+    void shouldNotProcessPaymentAmountNotMatch() {
+        var payment = new Payment();
+        payment.setUniqueId(uniqueId);
+        payment.setAmount(new BigDecimal("100.0"));
+
+        when(paymentRepository.findByUniqueId(uniqueId)).thenReturn(payment);
+
+        String creditCard = "1234567890123456";
+        var paymentResponse = paymentService.
+                processPayment(uniqueId, creditCard, new BigDecimal("200.0"));
+
+        assertAll("Payment request not found", () -> {
+            assertEquals("FAILED", paymentResponse.getStatus());
+            assertEquals("Amount does not match the payment request", paymentResponse.getMessage());
+            assertEquals(payment.getAmount(), paymentResponse.getAmount());
+            assertEquals(uniqueId, paymentResponse.getUniqueId());
+            assertFalse(paymentResponse.isPaid());
+            assertNull(paymentResponse.getCreditCardNumber());
+        });
     }
 }
