@@ -12,31 +12,31 @@ import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 class ArcUnitArchitecturalTests {
 
-    private final JavaClasses importedClasses = new ClassFileImporter().withImportOption(DO_NOT_INCLUDE_TESTS)
+    private static final JavaClasses IMPORT_PACKAGES = new ClassFileImporter().withImportOption(DO_NOT_INCLUDE_TESTS)
             .importPackages("com.eliasnogueira.paymentsystem");
 
     @Test
     void controllersShouldBeNamedProperly() {
         classes().that().resideInAPackage("..controller..")
-                .should().haveSimpleNameEndingWith("Controller").check(importedClasses);
+                .should().haveSimpleNameEndingWith("Controller").check(IMPORT_PACKAGES);
     }
 
     @Test
     void repositoriesShouldBeNamedProperly() {
         classes().that().resideInAPackage("..repository..")
-                .should().haveSimpleNameEndingWith("Repository").check(importedClasses);
+                .should().haveSimpleNameEndingWith("Repository").check(IMPORT_PACKAGES);
     }
 
     @Test
     void servicesShouldBeNamedProperly() {
         classes().that().resideInAPackage("..service..")
-                .should().haveSimpleNameEndingWith("Service").check(importedClasses);
+                .should().haveSimpleNameEndingWith("Service").check(IMPORT_PACKAGES);
     }
 
     @Test
     void serviceClassesShouldOnlyBeAccessedByController() {
         classes().that().resideInAPackage("..service..").should().onlyBeAccessed()
-                .byAnyPackage("..service..", "..controller").check(importedClasses);
+                .byAnyPackage("..service..", "..controller").check(IMPORT_PACKAGES);
     }
 
     @Test
@@ -48,11 +48,11 @@ class ArcUnitArchitecturalTests {
                 .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
                 .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
                 .whereLayer("Service").mayOnlyBeAccessedByLayers("Controller")
-                .check(importedClasses);
+                .check(IMPORT_PACKAGES);
     }
 
     @Test
     void noAutowired() {
-        noFields().should().beAnnotatedWith(Autowired.class).check(importedClasses);
+        noFields().should().beAnnotatedWith(Autowired.class).check(IMPORT_PACKAGES);
     }
 }
