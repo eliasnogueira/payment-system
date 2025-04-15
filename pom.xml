@@ -24,6 +24,7 @@
         <maven-surefire-junit5-tree-reporter.version>1.4.0</maven-surefire-junit5-tree-reporter.version>
 
         <spotbugs-maven-plugin.version>4.9.1.0</spotbugs-maven-plugin.version>
+        <archunit.version>1.4.0</archunit.version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
+            <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -90,10 +98,12 @@
                         <configuration>
                             <includes>
                                 <include>**/*Test.java</include>
+                                <include>%regex[.*(ArchUnit)*.*Tests.*]</include>
                             </includes>
                             <excludes>
                                 <exclude>**/*IT.java</exclude>
                             </excludes>
+                            <runOrder>alphabetical</runOrder>
                         </configuration>
                     </execution>
                 </executions>
@@ -134,7 +144,27 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
+

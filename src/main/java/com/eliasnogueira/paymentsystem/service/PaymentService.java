@@ -43,6 +43,7 @@ public class PaymentService {
         payment.setUniqueId(paymentRequest.getUniqueId());
         payment.setAmount(paymentRequest.getAmount());
         payment.setTimestamp(paymentRequest.getTimestamp());
+
         return paymentRepository.save(payment);
     }
 
