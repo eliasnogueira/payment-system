@@ -42,14 +42,20 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setUniqueId(paymentRequest.getUniqueId());
         payment.setAmount(paymentRequest.getAmount());
+        payment.setCurrency("USD");
         payment.setTimestamp(paymentRequest.getTimestamp());
         return paymentRepository.save(payment);
     }
 
     public PaymentResponse processPayment(String uniqueId, String creditCardNumber, BigDecimal amount) {
         Payment payment = paymentRepository.findByUniqueId(uniqueId);
+
         if (payment == null) {
             return new PaymentResponse("FAILED", "Payment request not found", null, uniqueId);
+        }
+
+        if (payment.getCurrency() != "USD" || payment.getCurrency() != "EUR") {
+            return new PaymentResponse("FAILED", "Payment currency not supported", null, uniqueId);
         }
 
         if (payment.getAmount().compareTo(amount) != 0) {
